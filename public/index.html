@@ -12,26 +12,54 @@
       theme: {
         extend: {
           colors: {
-            'bg': '#0f172a',
-            'card': '#111827',
-            'text': '#f1f5f9',
-            'muted': '#94a3b8',
-            'accent': '#3b82f6',
-            'accent-hover': '#2563eb',
-            'danger': '#ef4444',
-            'danger-hover': '#dc2626',
-            'border': '#1e293b',
-            'border-light': '#334155',
+            bg: 'var(--color-bg)',
+            card: 'var(--color-card)',
+            text: 'var(--color-text)',
+            muted: 'var(--color-muted)',
+            accent: 'var(--color-accent)',
+            'accent-hover': 'var(--color-accent-hover)',
+            danger: 'var(--color-danger)',
+            'danger-hover': 'var(--color-danger-hover)',
+            border: 'var(--color-border)',
+            'border-light': 'var(--color-border-light)',
           }
         }
       }
     }
   </script>
   <style>
+    :root {
+      --color-bg: #f1f5f9;
+      --color-card: #ffffff;
+      --color-text: #0f172a;
+      --color-muted: #64748b;
+      --color-accent: #3b82f6;
+      --color-accent-hover: #2563eb;
+      --color-danger: #ef4444;
+      --color-danger-hover: #dc2626;
+      --color-border: #e2e8f0;
+      --color-border-light: #cbd5e1;
+    }
+
+    html.dark {
+      --color-bg: #0f172a;
+      --color-card: #111827;
+      --color-text: #f1f5f9;
+      --color-muted: #94a3b8;
+      --color-border: #1e293b;
+      --color-border-light: #334155;
+    }
+
     body {
       font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Ubuntu, Cantarell, sans-serif;
-      background: linear-gradient(135deg, #0b1223 0%, #0f172a 50%, #0a0f1c 100%);
+      background-color: var(--color-bg);
+      color: var(--color-text);
       min-height: 100vh;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    html.dark body {
+      background: linear-gradient(135deg, #0b1223 0%, #0f172a 50%, #0a0f1c 100%);
     }
     
     @keyframes fadeIn {
@@ -42,6 +70,10 @@
     .animate-fade-in {
       animation: fadeIn 0.6s ease-out;
     }
+
+    #theme-icon-light { display: none; }
+    html.dark #theme-icon-light { display: block; }
+    html.dark #theme-icon-dark { display: none; }
 
   </style>
 </head>
@@ -86,10 +118,20 @@
       </footer>
 
       <section class="mt-6 pt-5 border-t border-border">
-        <div class="flex gap-2 flex-wrap">
+        <div class="flex gap-2 flex-wrap items-center">
           <button class="ghost px-4 py-2 rounded-xl bg-transparent text-muted border border-border-light cursor-pointer transition-all duration-200 hover:bg-accent/10 hover:text-accent hover:border-accent" id="exportBtn" title="Export as JSON">Export</button>
           <button class="ghost px-4 py-2 rounded-xl bg-transparent text-muted border border-border-light cursor-pointer transition-all duration-200 hover:bg-accent/10 hover:text-accent hover:border-accent" id="importBtn" title="Import from JSON">Import</button>
           <input type="file" id="fileInput" accept="application/json" hidden />
+
+          <div class="flex-grow"></div>
+          <button id="theme-toggle" class="ghost px-2.5 py-2.5 rounded-xl bg-transparent text-muted border border-border-light cursor-pointer transition-all duration-200 hover:bg-accent/10 hover:text-accent hover:border-accent" title="Toggle theme">
+            <svg id="theme-icon-light" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <svg id="theme-icon-dark" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+          </button>
         </div>
       </section>
     </div>
@@ -97,6 +139,27 @@
 
   <script>
     $(document).ready(function() {
+      // --- Theme ----------------------------------------------------------------
+      const THEME_KEY = "theme.v1";
+      const theme = { current: 'light' };
+
+      function loadTheme() {
+        const saved = localStorage.getItem(THEME_KEY);
+        if (saved) return saved;
+        if (window.matchMedia?.('(prefers-color-scheme: dark)').matches) return 'dark';
+        return 'light';
+      }
+
+      function saveTheme() {
+        localStorage.setItem(THEME_KEY, theme.current);
+      }
+
+      function applyTheme(newTheme) {
+        theme.current = newTheme;
+        document.documentElement.classList.toggle('dark', newTheme === 'dark');
+        saveTheme();
+      }
+
       // --- Storage & State ------------------------------------------------------
       const LS_KEY = "todos.v1";
       const state = {
@@ -327,7 +390,14 @@
         }
       });
 
+      $("#theme-toggle").on('click', function() {
+        const newTheme = theme.current === 'dark' ? 'light' : 'dark';
+        applyTheme(newTheme);
+      });
+
       // --- Bootstrap ------------------------------------------------------------
+      applyTheme(loadTheme());
+
       // Only seed initial data for first-time users (when localStorage has never been initialized)
       const hasBeenInitialized = localStorage.getItem(LS_KEY) !== null;
       if (state.todos.length === 0 && !hasBeenInitialized) {
