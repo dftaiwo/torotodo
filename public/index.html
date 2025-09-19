@@ -124,7 +124,8 @@
 
       <section class="mt-6 pt-5 border-t border-border">
         <div class="flex gap-2 flex-wrap">
-          <button class="ghost px-4 py-2 rounded-xl bg-transparent text-muted border border-border-light cursor-pointer transition-all duration-200 hover:bg-accent/10 hover:text-accent hover:border-accent" id="exportBtn" title="Export as JSON">Export</button>
+          <button class="ghost px-4 py-2 rounded-xl bg-transparent text-muted border border-border-light cursor-pointer transition-all duration-200 hover:bg-accent/10 hover:text-accent hover:border-accent" id="exportJsonBtn" title="Export as JSON">Export JSON</button>
+          <button class="ghost px-4 py-2 rounded-xl bg-transparent text-muted border border-border-light cursor-pointer transition-all duration-200 hover:bg-accent/10 hover:text-accent hover:border-accent" id="exportCsvBtn" title="Export as CSV">Export CSV</button>
           <button class="ghost px-4 py-2 rounded-xl bg-transparent text-muted border border-border-light cursor-pointer transition-all duration-200 hover:bg-accent/10 hover:text-accent hover:border-accent" id="importBtn" title="Import from JSON">Import</button>
           <input type="file" id="fileInput" accept="application/json" hidden />
         </div>
@@ -331,6 +332,36 @@
       }
 
       // --- Import/Export --------------------------------------------------------
+      function exportCSV() {
+        const headers = "id,title,completed,createdAt,dueAt";
+        const rows = state.todos.map(todo => {
+          const escape = (val) => {
+            val = String(val);
+            if (val.includes(',') || val.includes('"')) {
+              return `"${val.replace(/"/g, '""')}"`;
+            }
+            return val;
+          };
+          const dueAt = todo.dueAt || ''; // Add empty value for dueAt
+          return [
+            escape(todo.id),
+            escape(todo.title),
+            escape(todo.completed),
+            escape(todo.createdAt),
+            escape(dueAt)
+          ].join(',');
+        });
+
+        const csv = [headers, ...rows].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const $a = $('<a>').attr({ href: url, download: 'todos.csv' });
+        $('body').append($a);
+        $a[0].click();
+        $a.remove();
+        URL.revokeObjectURL(url);
+      }
+
       function exportJSON() {
         const blob = new Blob([JSON.stringify(state.todos, null, 2)], { type: "application/json" });
         const url = URL.createObjectURL(blob);
@@ -393,7 +424,9 @@
         }
       });
 
-      $("#exportBtn").on('click', exportJSON);
+      $("#exportJsonBtn").on('click', exportJSON);
+
+      $("#exportCsvBtn").on('click', exportCSV);
       
       $("#importBtn").on('click', function() {
         $("#fileInput").click();
