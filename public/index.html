@@ -8,24 +8,40 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script>
+    const palettes = {
+      light: {
+        'bg': '#f1f5f9',
+        'card': '#ffffff',
+        'text': '#0f172a',
+        'muted': '#64748b',
+        'accent': '#2563eb',
+        'accent-hover': '#1d4ed8',
+        'danger': '#dc2626',
+        'danger-hover': '#b91c1c',
+        'border': '#e2e8f0',
+        'border-light': '#cbd5e1',
+      },
+      dark: {
+        'bg': '#0f172a',
+        'card': '#111827',
+        'text': '#f1f5f9',
+        'muted': '#94a3b8',
+        'accent': '#3b82f6',
+        'accent-hover': '#2563eb',
+        'danger': '#ef4444',
+        'danger-hover': '#dc2626',
+        'border': '#1e293b',
+        'border-light': '#334155',
+      }
+    };
+
     tailwind.config = {
       theme: {
         extend: {
-          colors: {
-            'bg': '#0f172a',
-            'card': '#111827',
-            'text': '#f1f5f9',
-            'muted': '#94a3b8',
-            'accent': '#3b82f6',
-            'accent-hover': '#2563eb',
-            'danger': '#ef4444',
-            'danger-hover': '#dc2626',
-            'border': '#1e293b',
-            'border-light': '#334155',
-          }
+          colors: palettes.dark // Default to dark
         }
       }
-    }
+    };
   </script>
   <style>
     body {
@@ -89,6 +105,7 @@
         <div class="flex gap-2 flex-wrap">
           <button class="ghost px-4 py-2 rounded-xl bg-transparent text-muted border border-border-light cursor-pointer transition-all duration-200 hover:bg-accent/10 hover:text-accent hover:border-accent" id="exportBtn" title="Export as JSON">Export</button>
           <button class="ghost px-4 py-2 rounded-xl bg-transparent text-muted border border-border-light cursor-pointer transition-all duration-200 hover:bg-accent/10 hover:text-accent hover:border-accent" id="importBtn" title="Import from JSON">Import</button>
+          <button class="ghost px-4 py-2 rounded-xl bg-transparent text-muted border border-border-light cursor-pointer transition-all duration-200 hover:bg-accent/10 hover:text-accent hover:border-accent" id="themeBtn" title="Toggle theme">Light Mode</button>
           <input type="file" id="fileInput" accept="application/json" hidden />
         </div>
       </section>
@@ -121,6 +138,41 @@
       function save() {
         localStorage.setItem(LS_KEY, JSON.stringify(state.todos));
         updateStorageInfo();
+      }
+
+      function setTheme(theme, isInitialLoad = false) {
+        const palette = palettes[theme];
+
+        // Update tailwind config
+        tailwind.config.theme.extend.colors = palette;
+
+        // Update body background
+        const bodyBg = theme === 'light'
+          ? 'linear-gradient(135deg, #e2e8f0 0%, #f1f5f9 50%, #e5eaf0 100%)'
+          : 'linear-gradient(135deg, #0b1223 0%, #0f172a 50%, #0a0f1c 100%)';
+        $('body').css('background', bodyBg);
+
+        // Update button text
+        $("#themeBtn").text(theme === 'light' ? 'Dark Mode' : 'Light Mode');
+
+        // Store preference
+        localStorage.setItem('theme.v1', theme);
+
+        // Re-render UI
+        // This is a bit of a hack to force tailwind to re-evaluate classes
+        if (!isInitialLoad) {
+          const $app = $('[role="application"]');
+          $app.removeClass('animate-fade-in');
+          void $app[0].offsetWidth; // force reflow
+          $app.addClass('animate-fade-in');
+          render();
+        }
+      }
+
+      function toggleTheme() {
+        const currentTheme = localStorage.getItem('theme.v1') || 'dark';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
       }
 
       function updateStorageInfo() {
@@ -327,7 +379,13 @@
         }
       });
 
+      $("#themeBtn").on('click', toggleTheme);
+
       // --- Bootstrap ------------------------------------------------------------
+      // Theme initialization
+      const savedTheme = localStorage.getItem('theme.v1') || 'dark';
+      setTheme(savedTheme, true);
+
       // Only seed initial data for first-time users (when localStorage has never been initialized)
       const hasBeenInitialized = localStorage.getItem(LS_KEY) !== null;
       if (state.todos.length === 0 && !hasBeenInitialized) {
