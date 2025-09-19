@@ -9,29 +9,60 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
-            'bg': '#0f172a',
-            'card': '#111827',
-            'text': '#f1f5f9',
-            'muted': '#94a3b8',
-            'accent': '#3b82f6',
-            'accent-hover': '#2563eb',
-            'danger': '#ef4444',
-            'danger-hover': '#dc2626',
-            'border': '#1e293b',
-            'border-light': '#334155',
+            'white': '#ffffff',
+            'black': '#000000',
+            'bg': 'var(--bg)',
+            'card': 'var(--card)',
+            'text': 'var(--text)',
+            'muted': 'var(--muted)',
+            'accent': 'var(--accent)',
+            'accent-hover': 'var(--accent-hover)',
+            'danger': 'var(--danger)',
+            'danger-hover': 'var(--danger-hover)',
+            'border': 'var(--border)',
+            'border-light': 'var(--border-light)',
           }
         }
       }
     }
   </script>
   <style>
+    :root {
+      --bg: #ffffff;
+      --card: #f8fafc;
+      --text: #0f172a;
+      --muted: #64748b;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --danger: #dc2626;
+      --danger-hover: #b91c1c;
+      --border: #e2e8f0;
+      --border-light: #f1f5f9;
+    }
+    .dark {
+      --bg: #0f172a;
+      --card: #111827;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --border: #1e293b;
+      --border-light: #334155;
+    }
     body {
       font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Ubuntu, Cantarell, sans-serif;
-      background: linear-gradient(135deg, #0b1223 0%, #0f172a 50%, #0a0f1c 100%);
+      background-color: var(--bg);
+      color: var(--text);
       min-height: 100vh;
+    }
+    .dark body {
+      background: linear-gradient(135deg, #0b1223 0%, #0f172a 50%, #0a0f1c 100%);
     }
     
     @keyframes fadeIn {
@@ -47,6 +78,14 @@
 </head>
 
 <body>
+  <script>
+    // On page load or when changing themes, best to add inline in `head` to avoid FOUC
+    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark')
+    }
+  </script>
   <div class="max-w-2xl mx-auto my-16 px-5 md:my-16 my-5 md:px-5 px-4">
     <div class="bg-card border border-border rounded-2xl p-8 md:p-8 p-6 shadow-2xl backdrop-blur-sm animate-fade-in" role="application" aria-label="Todo app">
       <header class="mb-8">
@@ -57,7 +96,7 @@
       <section class="mb-6">
         <div class="flex gap-3 items-center md:flex-row flex-col">
           <input id="newTodo" type="text" placeholder="What needs to be done?" aria-label="New todo" 
-                 class="flex-1 px-4 py-3.5 rounded-xl border border-border-light bg-slate-900/80 text-text text-base transition-all duration-200 focus:outline-none focus:border-accent focus:ring-3 focus:ring-accent/10 placeholder:text-muted w-full" />
+                 class="flex-1 px-4 py-3.5 rounded-xl border border-border-light bg-card text-text text-base transition-all duration-200 focus:outline-none focus:border-accent focus:ring-3 focus:ring-accent/10 placeholder:text-muted w-full" />
           <button id="addBtn" aria-label="Add todo" 
                   class="px-5 py-3.5 rounded-xl bg-accent text-white font-semibold text-sm cursor-pointer transition-all duration-200 hover:bg-accent-hover hover:-translate-y-0.5 whitespace-nowrap md:w-auto w-full">Add Task</button>
         </div>
@@ -81,7 +120,7 @@
           <span id="count">0</span> tasks • <span id="storage"></span>
         </div>
         <div class="text-xs opacity-80">
-          <span class="kbd px-2 py-1 border border-border-light rounded text-xs text-muted bg-slate-900/50">Enter</span> to add •
+          <span class="kbd px-2 py-1 border border-border-light rounded text-xs text-muted bg-card">Enter</span> to add •
         </div>
       </footer>
 
@@ -90,6 +129,10 @@
           <button class="ghost px-4 py-2 rounded-xl bg-transparent text-muted border border-border-light cursor-pointer transition-all duration-200 hover:bg-accent/10 hover:text-accent hover:border-accent" id="exportBtn" title="Export as JSON">Export</button>
           <button class="ghost px-4 py-2 rounded-xl bg-transparent text-muted border border-border-light cursor-pointer transition-all duration-200 hover:bg-accent/10 hover:text-accent hover:border-accent" id="importBtn" title="Import from JSON">Import</button>
           <input type="file" id="fileInput" accept="application/json" hidden />
+          <button id="theme-toggle" class="ghost px-4 py-2 rounded-xl bg-transparent text-muted border border-border-light cursor-pointer transition-all duration-200 hover:bg-accent/10 hover:text-accent hover:border-accent">
+            <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+            <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 5.05A1 1 0 016.465 3.636l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zM5 11a1 1 0 100-2H4a1 1 0 100 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+          </button>
         </div>
       </section>
     </div>
@@ -201,7 +244,7 @@
         // Inline editing
         $li.find('span').on('dblclick', function() {
           const $span = $(this);
-          const $input = $(`<input class="flex-1 px-3 py-2 rounded-lg border border-accent bg-slate-900/90 text-text text-base" value="${todo.title}">`);
+          const $input = $(`<input class="flex-1 px-3 py-2 rounded-lg border border-accent bg-transparent text-text text-base" value="${todo.title}">`);
           
           $span.replaceWith($input);
           $input.focus().select();
@@ -325,6 +368,45 @@
           importJSON(file);
           $(this).val(''); // Reset file input
         }
+      });
+
+      var themeToggleDarkIcon = $('#theme-toggle-dark-icon');
+      var themeToggleLightIcon = $('#theme-toggle-light-icon');
+
+      // Change the icons inside the button based on previous settings
+      if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          themeToggleLightIcon.removeClass('hidden');
+      } else {
+          themeToggleDarkIcon.removeClass('hidden');
+      }
+
+      var themeToggleBtn = $('#theme-toggle');
+
+      themeToggleBtn.on('click', function() {
+          // toggle icons inside button
+          themeToggleDarkIcon.toggleClass('hidden');
+          themeToggleLightIcon.toggleClass('hidden');
+
+          // if set via local storage previously
+          if (localStorage.getItem('color-theme')) {
+              if (localStorage.getItem('color-theme') === 'light') {
+                  document.documentElement.classList.add('dark');
+                  localStorage.setItem('color-theme', 'dark');
+              } else {
+                  document.documentElement.classList.remove('dark');
+                  localStorage.setItem('color-theme', 'light');
+              }
+
+          // if NOT set via local storage previously
+          } else {
+              if (document.documentElement.classList.contains('dark')) {
+                  document.documentElement.classList.remove('dark');
+                  localStorage.setItem('color-theme', 'light');
+              } else {
+                  document.documentElement.classList.add('dark');
+                  localStorage.setItem('color-theme', 'dark');
+              }
+          }
       });
 
       // --- Bootstrap ------------------------------------------------------------
