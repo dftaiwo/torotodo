@@ -12,25 +12,49 @@
       theme: {
         extend: {
           colors: {
-            'bg': '#0f172a',
-            'card': '#111827',
-            'text': '#f1f5f9',
-            'muted': '#94a3b8',
-            'accent': '#3b82f6',
-            'accent-hover': '#2563eb',
-            'danger': '#ef4444',
-            'danger-hover': '#dc2626',
-            'border': '#1e293b',
-            'border-light': '#334155',
+            'bg': 'var(--color-bg)',
+            'card': 'var(--color-card)',
+            'text': 'var(--color-text)',
+            'muted': 'var(--color-muted)',
+            'accent': 'var(--color-accent)',
+            'accent-hover': 'var(--color-accent-hover)',
+            'danger': 'var(--color-danger)',
+            'danger-hover': 'var(--color-danger-hover)',
+            'border': 'var(--color-border)',
+            'border-light': 'var(--color-border-light)',
           }
         }
       }
     }
   </script>
   <style>
+    :root {
+      --color-bg: #0f172a;
+      --color-card: #111827;
+      --color-text: #f1f5f9;
+      --color-muted: #94a3b8;
+      --color-accent: #3b82f6;
+      --color-accent-hover: #2563eb;
+      --color-danger: #ef4444;
+      --color-danger-hover: #dc2626;
+      --color-border: #1e293b;
+      --color-border-light: #334155;
+    }
+    body.light-mode {
+      --color-bg: #f1f5f9;
+      --color-card: #ffffff;
+      --color-text: #0f172a;
+      --color-muted: #64748b;
+      --color-accent: #3b82f6;
+      --color-accent-hover: #2563eb;
+      --color-danger: #ef4444;
+      --color-danger-hover: #dc2626;
+      --color-border: #e2e8f0;
+      --color-border-light: #cbd5e1;
+    }
     body {
       font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Ubuntu, Cantarell, sans-serif;
-      background: linear-gradient(135deg, #0b1223 0%, #0f172a 50%, #0a0f1c 100%);
+      background-color: var(--color-bg);
       min-height: 100vh;
     }
     
@@ -89,6 +113,7 @@
         <div class="flex gap-2 flex-wrap">
           <button class="ghost px-4 py-2 rounded-xl bg-transparent text-muted border border-border-light cursor-pointer transition-all duration-200 hover:bg-accent/10 hover:text-accent hover:border-accent" id="exportBtn" title="Export as JSON">Export</button>
           <button class="ghost px-4 py-2 rounded-xl bg-transparent text-muted border border-border-light cursor-pointer transition-all duration-200 hover:bg-accent/10 hover:text-accent hover:border-accent" id="importBtn" title="Import from JSON">Import</button>
+          <button class="ghost px-4 py-2 rounded-xl bg-transparent text-muted border border-border-light cursor-pointer transition-all duration-200 hover:bg-accent/10 hover:text-accent hover:border-accent" id="themeBtn" title="Toggle theme">Toggle Theme</button>
           <input type="file" id="fileInput" accept="application/json" hidden />
         </div>
       </section>
@@ -97,6 +122,23 @@
 
   <script>
     $(document).ready(function() {
+      // --- Theme ----------------------------------------------------------------
+      const THEME_KEY = "theme.v1";
+      let currentTheme = localStorage.getItem(THEME_KEY) || 'dark';
+
+      function applyTheme(theme) {
+        if (theme === 'light') {
+          $('body').addClass('light-mode');
+        } else {
+          $('body').removeClass('light-mode');
+        }
+        currentTheme = theme;
+        localStorage.setItem(THEME_KEY, theme);
+        $('#themeBtn').text(theme === 'light' ? 'Switch to Dark Theme' : 'Switch to Light Theme');
+      }
+
+      applyTheme(currentTheme);
+
       // --- Storage & State ------------------------------------------------------
       const LS_KEY = "todos.v1";
       const state = {
@@ -286,6 +328,11 @@
       }
 
       // --- Event Handlers ------------------------------------------------------
+      $("#themeBtn").on('click', function() {
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        applyTheme(newTheme);
+      });
+
       $("#addBtn").on('click', function() {
         const title = $("#newTodo").val();
         addTodo(title);
