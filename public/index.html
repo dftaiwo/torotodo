@@ -9,29 +9,60 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
-            'bg': '#0f172a',
-            'card': '#111827',
-            'text': '#f1f5f9',
-            'muted': '#94a3b8',
-            'accent': '#3b82f6',
-            'accent-hover': '#2563eb',
-            'danger': '#ef4444',
-            'danger-hover': '#dc2626',
-            'border': '#1e293b',
-            'border-light': '#334155',
+            'bg': 'var(--bg)',
+            'card': 'var(--card)',
+            'text': 'var(--text)',
+            'muted': 'var(--muted)',
+            'accent': 'var(--accent)',
+            'accent-hover': 'var(--accent-hover)',
+            'danger': 'var(--danger)',
+            'danger-hover': 'var(--danger-hover)',
+            'border': 'var(--border)',
+            'border-light': 'var(--border-light)',
           }
         }
       }
     }
   </script>
   <style>
+    :root {
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --border: #e2e8f0;
+      --border-light: #cbd5e1;
+    }
+
+    html.dark {
+      --bg: #0f172a;
+      --card: #111827;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --border: #1e293b;
+      --border-light: #334155;
+    }
+
     body {
       font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Ubuntu, Cantarell, sans-serif;
-      background: linear-gradient(135deg, #0b1223 0%, #0f172a 50%, #0a0f1c 100%);
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
       min-height: 100vh;
+    }
+
+    html.dark body {
+      background: linear-gradient(135deg, #0b1223 0%, #0f172a 50%, #0a0f1c 100%);
     }
     
     @keyframes fadeIn {
@@ -49,15 +80,23 @@
 <body>
   <div class="max-w-2xl mx-auto my-16 px-5 md:my-16 my-5 md:px-5 px-4">
     <div class="bg-card border border-border rounded-2xl p-8 md:p-8 p-6 shadow-2xl backdrop-blur-sm animate-fade-in" role="application" aria-label="Todo app">
-      <header class="mb-8">
-        <h1 class="text-3xl font-bold mb-3 bg-gradient-to-r from-text to-muted bg-clip-text text-transparent">Toro</h1>
-        <div class="text-muted text-base leading-relaxed">Your personal task manager</div>
+      <header class="mb-8 flex justify-between items-center">
+        <div>
+          <h1 class="text-3xl font-bold mb-3 bg-gradient-to-r from-text to-muted bg-clip-text text-transparent">Toro</h1>
+          <div class="text-muted text-base leading-relaxed">Your personal task manager</div>
+        </div>
+        <button id="theme-toggle" class="p-2 rounded-full text-muted hover:text-accent focus:outline-none">
+          <svg id="theme-toggle-dark-icon" class="hidden h-6 w-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+          <svg id="theme-toggle-light-icon" class="hidden h-6 w-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-.707 8.486a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+        </button>
       </header>
 
       <section class="mb-6">
         <div class="flex gap-3 items-center md:flex-row flex-col">
           <input id="newTodo" type="text" placeholder="What needs to be done?" aria-label="New todo" 
                  class="flex-1 px-4 py-3.5 rounded-xl border border-border-light bg-slate-900/80 text-text text-base transition-all duration-200 focus:outline-none focus:border-accent focus:ring-3 focus:ring-accent/10 placeholder:text-muted w-full" />
+          <input id="newTodoDueDate" type="date" aria-label="Due date"
+                   class="px-4 py-3.5 rounded-xl border border-border-light bg-slate-900/80 text-muted text-base transition-all duration-200 focus:outline-none focus:border-accent focus:ring-3 focus:ring-accent/10 md:w-auto w-full" />
           <button id="addBtn" aria-label="Add todo" 
                   class="px-5 py-3.5 rounded-xl bg-accent text-white font-semibold text-sm cursor-pointer transition-all duration-200 hover:bg-accent-hover hover:-translate-y-0.5 whitespace-nowrap md:w-auto w-full">Add Task</button>
         </div>
@@ -69,6 +108,15 @@
           <span class="pill px-4 py-2 rounded-full border border-border-light cursor-pointer text-muted text-sm font-medium transition-all duration-200 hover:bg-accent/10 hover:border-accent hover:text-accent" data-filter="active" role="tab" aria-selected="false">Active</span>
           <span class="pill px-4 py-2 rounded-full border border-border-light cursor-pointer text-muted text-sm font-medium transition-all duration-200 hover:bg-accent/10 hover:border-accent hover:text-accent" data-filter="completed" role="tab" aria-selected="false">Completed</span>
           <span class="pill px-4 py-2 rounded-full border border-border-light cursor-pointer text-muted text-sm font-medium transition-all duration-200 hover:bg-accent/10 hover:border-accent hover:text-accent" data-action="clearCompleted" title="Remove all completed">Clear Completed</span>
+        </div>
+      </section>
+
+      <section class="mb-5 border-t border-border pt-5 mt-5">
+        <div class="flex gap-2 items-center flex-wrap" role="radiogroup" aria-label="Sort by">
+          <span class="text-sm font-medium text-muted">Sort by:</span>
+          <span class="sort-pill active px-4 py-2 rounded-full border border-accent text-accent bg-accent/15 cursor-pointer text-sm font-medium transition-all duration-200" data-sort="createdAt" role="radio" aria-checked="true">Created</span>
+          <span class="sort-pill px-4 py-2 rounded-full border border-border-light cursor-pointer text-muted text-sm font-medium transition-all duration-200 hover:bg-accent/10 hover:border-accent hover:text-accent" data-sort="dueAt" role="radio" aria-checked="false">Due Date</span>
+          <span class="sort-pill px-4 py-2 rounded-full border border-border-light cursor-pointer text-muted text-sm font-medium transition-all duration-200 hover:bg-accent/10 hover:border-accent hover:text-accent" data-sort="completed" role="radio" aria-checked="false">Completed</span>
         </div>
       </section>
 
@@ -87,7 +135,8 @@
 
       <section class="mt-6 pt-5 border-t border-border">
         <div class="flex gap-2 flex-wrap">
-          <button class="ghost px-4 py-2 rounded-xl bg-transparent text-muted border border-border-light cursor-pointer transition-all duration-200 hover:bg-accent/10 hover:text-accent hover:border-accent" id="exportBtn" title="Export as JSON">Export</button>
+          <button class="ghost px-4 py-2 rounded-xl bg-transparent text-muted border border-border-light cursor-pointer transition-all duration-200 hover:bg-accent/10 hover:text-accent hover:border-accent" id="exportJsonBtn" title="Export as JSON">Export JSON</button>
+          <button class="ghost px-4 py-2 rounded-xl bg-transparent text-muted border border-border-light cursor-pointer transition-all duration-200 hover:bg-accent/10 hover:text-accent hover:border-accent" id="exportCsvBtn" title="Export as CSV">Export CSV</button>
           <button class="ghost px-4 py-2 rounded-xl bg-transparent text-muted border border-border-light cursor-pointer transition-all duration-200 hover:bg-accent/10 hover:text-accent hover:border-accent" id="importBtn" title="Import from JSON">Import</button>
           <input type="file" id="fileInput" accept="application/json" hidden />
         </div>
@@ -97,10 +146,55 @@
 
   <script>
     $(document).ready(function() {
+      // --- Theme Switching ------------------------------------------------------
+      const themeToggle = document.getElementById('theme-toggle');
+      const darkIcon = document.getElementById('theme-toggle-dark-icon');
+      const lightIcon = document.getElementById('theme-toggle-light-icon');
+      const htmlEl = document.documentElement;
+
+      // Function to set the theme
+      const setTheme = (theme) => {
+        if (theme === 'dark') {
+          htmlEl.classList.add('dark');
+          darkIcon.classList.remove('hidden');
+          lightIcon.classList.add('hidden');
+          localStorage.setItem('theme', 'dark');
+        } else {
+          htmlEl.classList.remove('dark');
+          darkIcon.classList.add('hidden');
+          lightIcon.classList.remove('hidden');
+          localStorage.setItem('theme', 'light');
+        }
+      };
+
+      // Set initial theme
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        setTheme(savedTheme);
+      } else {
+        // If no theme is saved, use system preference
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          setTheme('dark');
+        } else {
+          setTheme('light');
+        }
+      }
+
+      // Event listener for the toggle button
+      themeToggle.addEventListener('click', () => {
+        if (htmlEl.classList.contains('dark')) {
+          setTheme('light');
+        } else {
+          setTheme('dark');
+        }
+      });
+
       // --- Storage & State ------------------------------------------------------
       const LS_KEY = "todos.v1";
+      const LS_SORT_KEY = "todos.sort.v1";
       const state = {
         filter: "all",
+        sortBy: localStorage.getItem(LS_SORT_KEY) || 'createdAt',
         todos: load()
       };
 
@@ -120,6 +214,7 @@
 
       function save() {
         localStorage.setItem(LS_KEY, JSON.stringify(state.todos));
+        localStorage.setItem(LS_SORT_KEY, state.sortBy);
         updateStorageInfo();
       }
 
@@ -130,16 +225,19 @@
       }
 
       // --- CRUD Operations -----------------------------------------------------
-      function addTodo(title) {
+      function addTodo(title, dueAt) {
         title = (title || "").trim();
         if (!title) return;
         
-        state.todos.push({ 
+        const newTodo = {
           id: uid(), 
           title, 
           completed: false, 
-          createdAt: Date.now() 
-        });
+          createdAt: Date.now(),
+          dueAt: dueAt ? new Date(dueAt).getTime() : null
+        };
+
+        state.todos.push(newTodo);
         save();
         render();
       }
@@ -176,19 +274,59 @@
 
       // --- Rendering -----------------------------------------------------------
       function getFiltered() {
+        let filteredTodos;
         switch (state.filter) {
-          case "active": return state.todos.filter(t => !t.completed);
-          case "completed": return state.todos.filter(t => t.completed);
-          default: return state.todos;
+          case "active":
+            filteredTodos = state.todos.filter(t => !t.completed);
+            break;
+          case "completed":
+            filteredTodos = state.todos.filter(t => t.completed);
+            break;
+          default:
+            filteredTodos = [...state.todos];
+            break;
         }
+
+        // Sort the filtered todos
+        switch (state.sortBy) {
+          case 'dueAt':
+            filteredTodos.sort((a, b) => {
+              if (a.dueAt && b.dueAt) return a.dueAt - b.dueAt;
+              if (a.dueAt) return -1;
+              if (b.dueAt) return 1;
+              return b.createdAt - a.createdAt;
+            });
+            break;
+          case 'completed':
+            filteredTodos.sort((a, b) => {
+              if (a.completed === b.completed) {
+                return b.createdAt - a.createdAt;
+              }
+              return a.completed ? 1 : -1;
+            });
+            break;
+          case 'createdAt':
+          default:
+            filteredTodos.sort((a, b) => b.createdAt - a.createdAt);
+            break;
+        }
+
+        return filteredTodos;
       }
 
       function createTodoItem(todo) {
+        const dueAtStr = todo.dueAt ? `
+          <div class="text-xs text-muted mt-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-1 -mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            Due: ${new Date(todo.dueAt).toLocaleDateString()}
+          </div>` : '';
+
         const $li = $(`
-          <li class="flex items-center gap-3 py-4 border-b border-border transition-all duration-200 hover:bg-accent/5 hover:rounded-lg hover:mx-[-8px] hover:px-2 ${todo.completed ? 'opacity-75' : ''}" data-id="${todo.id}">
-            <label class="flex-1 flex items-center gap-3 cursor-pointer">
-              <input type="checkbox" class="w-5 h-5 accent-accent cursor-pointer" ${todo.completed ? 'checked' : ''}>
-              <span class="flex-1 text-base leading-relaxed ${todo.completed ? 'text-muted line-through' : 'text-text'}">${todo.title}</span>
+          <li class="flex items-start gap-3 py-4 border-b border-border transition-all duration-200 hover:bg-accent/5 hover:rounded-lg hover:mx-[-8px] hover:px-2 ${todo.completed ? 'opacity-75' : ''}" data-id="${todo.id}">
+            <input type="checkbox" id="todo-${todo.id}" class="w-5 h-5 accent-accent cursor-pointer mt-1" ${todo.completed ? 'checked' : ''}>
+            <label for="todo-${todo.id}" class="flex-1 cursor-pointer">
+              <span class="text-base leading-relaxed ${todo.completed ? 'text-muted line-through' : 'text-text'}">${todo.title}</span>
+              ${dueAtStr}
             </label>
             <button class="w-6 h-6 md:w-6 md:h-6 w-7 h-7 rounded-full bg-transparent text-muted border border-transparent flex items-center justify-center text-base md:text-base text-lg opacity-60 md:opacity-60 opacity-50 transition-all duration-200 hover:bg-danger/10 hover:text-danger hover:border-danger hover:opacity-100 hover:scale-110 md:hover:scale-110 hover:scale-115" title="Delete task">×</button>
           </li>
@@ -248,9 +386,54 @@
             $pill.addClass('px-4 py-2 rounded-full border border-border-light cursor-pointer text-muted text-sm font-medium transition-all duration-200 hover:bg-accent/10 hover:border-accent hover:text-accent');
           }
         });
+
+        // Update sort pills
+        $(".sort-pill").each(function() {
+            const $pill = $(this);
+            const isActive = $pill.data('sort') === state.sortBy;
+
+            $pill.removeClass('active')
+                 .attr('aria-checked', isActive);
+
+            if (isActive) {
+                $pill.addClass('active px-4 py-2 rounded-full border border-accent text-accent bg-accent/15 cursor-pointer text-sm font-medium transition-all duration-200');
+            } else {
+                $pill.addClass('px-4 py-2 rounded-full border border-border-light cursor-pointer text-muted text-sm font-medium transition-all duration-200 hover:bg-accent/10 hover:border-accent hover:text-accent');
+            }
+        });
       }
 
       // --- Import/Export --------------------------------------------------------
+      function exportCSV() {
+        const headers = "id,title,completed,createdAt,dueAt";
+        const rows = state.todos.map(todo => {
+          const escape = (val) => {
+            val = String(val);
+            if (val.includes(',') || val.includes('"')) {
+              return `"${val.replace(/"/g, '""')}"`;
+            }
+            return val;
+          };
+          const dueAt = todo.dueAt || ''; // Add empty value for dueAt
+          return [
+            escape(todo.id),
+            escape(todo.title),
+            escape(todo.completed),
+            escape(todo.createdAt),
+            escape(dueAt)
+          ].join(',');
+        });
+
+        const csv = [headers, ...rows].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const $a = $('<a>').attr({ href: url, download: 'todos.csv' });
+        $('body').append($a);
+        $a[0].click();
+        $a.remove();
+        URL.revokeObjectURL(url);
+      }
+
       function exportJSON() {
         const blob = new Blob([JSON.stringify(state.todos, null, 2)], { type: "application/json" });
         const url = URL.createObjectURL(blob);
@@ -273,7 +456,8 @@
               id: t.id || uid(),
               title: String(t.title || "").trim(),
               completed: !!t.completed,
-              createdAt: Number(t.createdAt || Date.now())
+              createdAt: Number(t.createdAt || Date.now()),
+              dueAt: t.dueAt ? Number(t.dueAt) : null
             })).filter(t => t.title);
             
             save();
@@ -288,15 +472,19 @@
       // --- Event Handlers ------------------------------------------------------
       $("#addBtn").on('click', function() {
         const title = $("#newTodo").val();
-        addTodo(title);
+        const dueAt = $("#newTodoDueDate").val();
+        addTodo(title, dueAt);
         $("#newTodo").val('').focus();
+        $("#newTodoDueDate").val('');
       });
 
       $("#newTodo").on('keydown', function(e) {
         if (e.key === 'Enter') {
           const title = $(this).val();
-          addTodo(title);
+          const dueAt = $("#newTodoDueDate").val();
+          addTodo(title, dueAt);
           $(this).val('');
+          $("#newTodoDueDate").val('');
         }
       });
 
@@ -313,7 +501,20 @@
         }
       });
 
-      $("#exportBtn").on('click', exportJSON);
+      $(".sort-pill").on('click', function() {
+        const $pill = $(this);
+        const sortBy = $pill.data('sort');
+
+        if (sortBy) {
+          state.sortBy = sortBy;
+          save();
+          render();
+        }
+      });
+
+      $("#exportJsonBtn").on('click', exportJSON);
+
+      $("#exportCsvBtn").on('click', exportCSV);
       
       $("#importBtn").on('click', function() {
         $("#fileInput").click();
