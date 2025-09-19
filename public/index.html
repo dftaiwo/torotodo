@@ -103,10 +103,16 @@
       </section>
 
       <section class="mb-5">
+        <input id="searchInput" type="search" placeholder="Search tasks..."
+               class="w-full px-4 py-3.5 rounded-xl border border-border-light bg-slate-900/80 text-text text-base transition-all duration-200 focus:outline-none focus:border-accent focus:ring-3 focus:ring-accent/10 placeholder:text-muted" />
+      </section>
+
+      <section class="mb-5">
         <div class="flex gap-2 flex-wrap" role="tablist" aria-label="Filters">
           <span class="pill active px-4 py-2 rounded-full border border-accent text-accent bg-accent/15 cursor-pointer text-sm font-medium transition-all duration-200" data-filter="all" role="tab" aria-selected="true">All</span>
           <span class="pill px-4 py-2 rounded-full border border-border-light cursor-pointer text-muted text-sm font-medium transition-all duration-200 hover:bg-accent/10 hover:border-accent hover:text-accent" data-filter="active" role="tab" aria-selected="false">Active</span>
           <span class="pill px-4 py-2 rounded-full border border-border-light cursor-pointer text-muted text-sm font-medium transition-all duration-200 hover:bg-accent/10 hover:border-accent hover:text-accent" data-filter="completed" role="tab" aria-selected="false">Completed</span>
+          <span class="pill px-4 py-2 rounded-full border border-border-light cursor-pointer text-muted text-sm font-medium transition-all duration-200 hover:bg-accent/10 hover:border-accent hover:text-accent" data-filter="overdue" role="tab" aria-selected="false">Overdue</span>
           <span class="pill px-4 py-2 rounded-full border border-border-light cursor-pointer text-muted text-sm font-medium transition-all duration-200 hover:bg-accent/10 hover:border-accent hover:text-accent" data-action="clearCompleted" title="Remove all completed">Clear Completed</span>
         </div>
       </section>
@@ -192,9 +198,11 @@
       // --- Storage & State ------------------------------------------------------
       const LS_KEY = "todos.v1";
       const LS_SORT_KEY = "todos.sort.v1";
+      let debounceTimeout;
       const state = {
         filter: "all",
         sortBy: localStorage.getItem(LS_SORT_KEY) || 'createdAt',
+        searchQuery: '',
         todos: load()
       };
 
@@ -274,16 +282,26 @@
 
       // --- Rendering -----------------------------------------------------------
       function getFiltered() {
-        let filteredTodos;
+        let filteredTodos = [...state.todos];
+
+        // Apply search query
+        if (state.searchQuery) {
+          filteredTodos = filteredTodos.filter(t =>
+            t.title.toLowerCase().includes(state.searchQuery.toLowerCase())
+          );
+        }
+
+        // Apply filters
         switch (state.filter) {
           case "active":
-            filteredTodos = state.todos.filter(t => !t.completed);
+            filteredTodos = filteredTodos.filter(t => !t.completed);
             break;
           case "completed":
-            filteredTodos = state.todos.filter(t => t.completed);
+            filteredTodos = filteredTodos.filter(t => t.completed);
             break;
-          default:
-            filteredTodos = [...state.todos];
+          case "overdue":
+            const today = new Date().setHours(0, 0, 0, 0);
+            filteredTodos = filteredTodos.filter(t => t.dueAt && t.dueAt < today && !t.completed);
             break;
         }
 
@@ -510,6 +528,14 @@
           save();
           render();
         }
+      });
+
+      $("#searchInput").on('input', function() {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => {
+          state.searchQuery = $(this).val();
+          render();
+        }, 300);
       });
 
       $("#exportJsonBtn").on('click', exportJSON);
