@@ -242,6 +242,13 @@ We'll create these issues and run at least two live during the workshop.
 1. **Navigate to Issues**
    - Click the "Issues" tab in your GitHub repository
 
+> **Note:** If you don't see the Issues tab, you may need to enable it:
+> 1. Go to your repository's "Settings"
+> 2. Scroll down to "Features" section
+> 3. Check the box next to "Issues"
+> 4. The Issues tab will now appear in your repository navigation
+
+
 2. **Create New Issue**
    - Click the green "New Issue" button
 
