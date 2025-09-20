@@ -49,7 +49,7 @@ A browser-only Todo app (HTML/CSS/JS), then use an autonomous Jules  to implemen
 ## Step 1: Get the Starter App
 
 ###  Repository
-Visit: **[https://github.com/dftaiwo/torotodo](https://github.com/dftaiwo/torotodo)**
+Visit: **[https://github.com/dftaiwo/torotodo](https://github.com/dftaiwo/torotodo){:target="_blank"}**
 
 ###  Choose Your Setup Method
 
@@ -58,7 +58,7 @@ Visit: **[https://github.com/dftaiwo/torotodo](https://github.com/dftaiwo/toroto
 
 1. **Fork the repository**
    - Click the "Fork" button on the repository page
-   - Or visit: [https://github.com/dftaiwo/torotodo/fork](https://github.com/dftaiwo/torotodo/fork)
+   - Or visit: [https://github.com/dftaiwo/torotodo/fork](https://github.com/dftaiwo/torotodo/fork){:target="_blank"}
    - Leave all defaults and click "Create Fork"
 
 2. **Verify it works**
@@ -94,7 +94,7 @@ Visit: **[https://github.com/dftaiwo/torotodo](https://github.com/dftaiwo/toroto
 ### Initial Setup
 
 1. **Visit Jules**
-   - Go to **[jules.google](https://jules.google)** 
+   - Go to **[jules.google](https://jules.google){:target="_blank"}** 
    - Click "Try Jules"
 
 2. **Authorize GitHub Access**
@@ -112,7 +112,7 @@ Visit: **[https://github.com/dftaiwo/torotodo](https://github.com/dftaiwo/toroto
 ### 🌓 Let's Add Dark Mode!
 
 1. **Open Jules Dashboard**
-   - Go to **[jules.google](https://jules.google)**
+   - Go to **[jules.google](https://jules.google){:target="_blank"}**
    - Click "Try Jules"
 
 2. **Select Your Repository**
@@ -409,7 +409,7 @@ Jules is a perpetually available  pair programmer
 ```bash
 npm install -g firebase-tools
 ```
-> Or visit: [Firebase CLI Documentation](https://firebase.google.com/docs/cli)
+> Or visit: [Firebase CLI Documentation](https://firebase.google.com/docs/cli){:target="_blank"}
 
 #### 2. **Login to Firebase**
 ```bash
@@ -453,10 +453,10 @@ Now whenever you push to `main`:
 
 ###  **Resources & Links**
 
--  **Getting Started:** [jules.google/docs](https://jules.google/docs)
--  **Managing Tasks:** [jules.google/docs/tasks-repos](https://jules.google/docs/tasks-repos)
--  **Running Tasks:** [jules.google/docs/running-tasks](https://jules.google/docs/running-tasks)
--  **Awesome Jules Prompts:** [github.com/google-labs-code/jules-awesome-list](https://github.com/google-labs-code/jules-awesome-list)
+-  **Getting Started:** [jules.google/docs](https://jules.google/docs){:target="_blank"}
+-  **Managing Tasks:** [jules.google/docs/tasks-repos](https://jules.google/docs/tasks-repos){:target="_blank"}
+-  **Running Tasks:** [jules.google/docs/running-tasks](https://jules.google/docs/running-tasks){:target="_blank"}
+-  **Awesome Jules Prompts:** [github.com/google-labs-code/jules-awesome-list](https://github.com/google-labs-code/jules-awesome-list){:target="_blank"}
 
 ---
 
@@ -497,6 +497,6 @@ You are contributing to a ----------.
 
 ---
 
-*Workshop created by [@dftaiwo](https://x.com/dftaiwo)*
+*Workshop created by [@dftaiwo](https://x.com/dftaiwo){:target="_blank"}*
 
 </div>
